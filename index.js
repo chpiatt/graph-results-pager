@@ -47,24 +47,21 @@ const pageResults = ({ api, query: { entity, selection = {}, properties = [] }, 
 			console.log(query);
 		}
 
-		return graphQLClient
-			.request(query)
-			.then(response => response.json())
-			.then(json => {
-				if (json.errors) {
-					throw Error(JSON.stringify(json.errors));
-				}
-				const {
-					data: { [entity]: results },
-				} = json;
+		return graphQLClient.rawRequest(query).then(json => {
+			if (json.errors) {
+				throw Error(JSON.stringify(json.errors));
+			}
+			const {
+				data: { [entity]: results },
+			} = json;
 
-				// stop if we are on the last page
-				if (results.length < pageSize || Math.min(max, skip + results.length) >= max) {
-					return results;
-				}
+			// stop if we are on the last page
+			if (results.length < pageSize || Math.min(max, skip + results.length) >= max) {
+				return results;
+			}
 
-				return runner({ skip: skip + pageSize }).then(newResults => results.concat(newResults));
-			});
+			return runner({ skip: skip + pageSize }).then(newResults => results.concat(newResults));
+		});
 	};
 
 	return runner({ skip: 0 });
