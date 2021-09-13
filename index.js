@@ -40,15 +40,7 @@ const pageResults = ({ api, query: { entity, selection = {}, properties = [] }, 
 			skip,
 		});
 
-		const query = gql`
-			{
-				"query":" {
-					${entity}(${propToString(selectionObj)}) {
-						${properties.join(',')}
-					}
-				}", 
-				"variables": null
-			}`;
+		const query = gql`{${entity}(${propToString(selectionObj)}) {${properties.join(',')}}}`;
 
 		// support query logging in nodejs
 		if (typeof process === 'object' && process.env.DEBUG === 'true') {
