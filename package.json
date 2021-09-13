@@ -1,6 +1,6 @@
 {
 	"name": "@chpiatt/graph-results-pager",
-	"version": "1.0.3",
+	"version": "1.0.4",
 	"description": "Utility to get paged results from The Graph subgraphs",
 	"main": "index.js",
 	"browser": "browser.js",
@@ -27,12 +27,9 @@
 		"url": "git+https://github.com/chpiatt/graph-results-pager.git"
 	},
 	"keywords": [
-		"thegraprotocol"
+		"thegraphprotocol"
 	],
-	"authors": [
-		"justin j. moses",
-		"Chris Piatt"
-	],
+	"author": "Chris Piatt",
 	"license": "MIT",
 	"bugs": {
 		"url": "https://github.com/chpiatt/graph-results-pager/issues"
