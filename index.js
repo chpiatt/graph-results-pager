@@ -1,6 +1,6 @@
 'use strict';
 
-const fetch = require('node-fetch');
+const { GraphQLClient, gql } = require('graphql-request');
 
 const MAX_PAGE_SIZE = 1000; // The Graph max page size
 
@@ -18,6 +18,9 @@ const MAX_PAGE_SIZE = 1000; // The Graph max page size
 const pageResults = ({ api, query: { entity, selection = {}, properties = [] }, timeout = 10e3, max = Infinity }) => {
 	max = Number(max);
 	const pageSize = MAX_PAGE_SIZE;
+	const graphQLClient = new GraphQLClient(api, {
+		timeout: timeout,
+	});
 
 	// Note: this approach will call each page in linear order, ensuring it stops as soon as all results
 	// are fetched. This could be sped up with a number of requests done in parallel, stopping as soon as any return
@@ -37,18 +40,23 @@ const pageResults = ({ api, query: { entity, selection = {}, properties = [] }, 
 			skip,
 		});
 
-		const body = `{"query":"{${entity}(${propToString(selectionObj)}){${properties.join(',')}}}", "variables": null}`;
+		const query = gql`
+			{
+				"query":" {
+					${entity}(${propToString(selectionObj)}) {
+						${properties.join(',')}
+					}
+				}", 
+				"variables": null
+			}`;
 
 		// support query logging in nodejs
 		if (typeof process === 'object' && process.env.DEBUG === 'true') {
-			console.log(body);
+			console.log(query);
 		}
 
-		return fetch(api, {
-			method: 'POST',
-			body,
-			timeout,
-		})
+		return graphQLClient
+			.request(query)
 			.then(response => response.json())
 			.then(json => {
 				if (json.errors) {
